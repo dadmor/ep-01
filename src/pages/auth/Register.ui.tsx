@@ -1,7 +1,7 @@
-// src/pages/auth/Register.tsx
+// src/pages/auth/Register.ui.tsx
 import React, { useState } from 'react';
-import { useInsert } from '../api/hooks';
 import { Link } from 'react-router-dom';
+import { useInsert } from '../api/hooks';
 
 export const routeConfig = {
   path: "/auth/register",
@@ -12,17 +12,16 @@ interface RegisterData {
   email: string;
   username: string;
   password: string;
-  confirmPassword?: string;
+  confirmPassword: string;
 }
 
-export default function Register() {
+export default function RegisterUI() {
   const [formData, setFormData] = useState<RegisterData>({
     email: '',
     username: '',
     password: '',
     confirmPassword: ''
   });
-  
   const [passwordMatch, setPasswordMatch] = useState(true);
   const mutation = useInsert<RegisterData>('register', 'users');
 
@@ -32,38 +31,33 @@ export default function Register() {
       ...prev,
       [name]: value
     }));
-
-    // Sprawdź zgodność haseł
-    if (name === 'confirmPassword' || name === 'password') {
-      const password = name === 'password' ? value : formData.password;
-      const confirmPassword = name === 'confirmPassword' ? value : formData.confirmPassword;
-      setPasswordMatch(password === confirmPassword);
+    if (name === 'password' || name === 'confirmPassword') {
+      const pass = name === 'password' ? value : formData.password;
+      const conf = name === 'confirmPassword' ? value : formData.confirmPassword;
+      setPasswordMatch(pass === conf);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!passwordMatch) {
-      return;
-    }
-
-    // Usuń confirmPassword przed wysłaniem
-    const { confirmPassword, ...dataToSend } = formData;
-    mutation.mutate(dataToSend);
+    if (!passwordMatch) return;
+    const { confirmPassword, ...data } = formData;
+    mutation.mutate(data);
   };
 
   const handleTestData = () => {
-    const mockRegister = { 
-      email: 'new@example.com', 
-      username: 'newuser', 
-      password: 'password123' 
-    };
-    setFormData({
-      ...mockRegister,
+    const mock = {
+      email: 'new@example.com',
+      username: 'newuser',
+      password: 'password123',
       confirmPassword: 'password123'
+    };
+    setFormData(mock);
+    mutation.mutate({
+      email: mock.email,
+      username: mock.username,
+      password: mock.password
     });
-    mutation.mutate(mockRegister);
   };
 
   return (
@@ -73,7 +67,7 @@ export default function Register() {
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-primary">Rejestracja</h1>
             <p className="text-base-content/70 mt-2">
-              Stwórz nowe konto i dołącz do nas
+              Utwórz nowe konto
             </p>
           </div>
 
@@ -102,7 +96,7 @@ export default function Register() {
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                placeholder="Wybierz nazwę użytkownika"
+                placeholder="Wprowadź nazwę użytkownika"
                 className="input input-bordered w-full"
                 required
               />
@@ -132,58 +126,32 @@ export default function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="Powtórz hasło"
-                className={`input input-bordered w-full ${
-                  !passwordMatch && formData.confirmPassword ? 'input-error' : ''
-                }`}
+                placeholder="Potwierdź hasło"
+                className={`input input-bordered w-full ${!passwordMatch && formData.confirmPassword ? 'input-error' : ''}`}
                 required
               />
               {!passwordMatch && formData.confirmPassword && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
-                    Hasła nie są zgodne
-                  </span>
+                  <span className="label-text-alt text-error">Hasła nie pasują</span>
                 </label>
               )}
             </div>
 
-            <div className="form-control">
-              <label className="cursor-pointer label justify-start gap-3">
-                <input type="checkbox" className="checkbox checkbox-primary" required />
-                <span className="label-text">
-                  Akceptuję{' '}
-                  <a href="#" className="link link-primary">
-                    regulamin
-                  </a>{' '}
-                  i{' '}
-                  <a href="#" className="link link-primary">
-                    politykę prywatności
-                  </a>
-                </span>
-              </label>
-            </div>
-
             {mutation.error && (
               <div className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
                 <span>{mutation.error.message}</span>
               </div>
             )}
 
             {mutation.data && (
               <div className="alert alert-success">
-                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
                 <span>Rejestracja udana!</span>
               </div>
             )}
 
             <div className="form-control mt-6">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className={`btn btn-primary w-full ${mutation.isPending ? 'loading' : ''}`}
                 disabled={mutation.isPending || !passwordMatch}
               >
@@ -194,7 +162,7 @@ export default function Register() {
 
           <div className="divider">LUB</div>
 
-          <button 
+          <button
             onClick={handleTestData}
             className="btn btn-outline btn-secondary w-full"
             disabled={mutation.isPending}
@@ -207,6 +175,11 @@ export default function Register() {
               Masz już konto?{' '}
               <Link to="/auth/login" className="link link-primary font-medium">
                 Zaloguj się
+              </Link>
+            </p>
+            <p className="text-base-content/70 mt-2">
+              <Link to="/auth/register?agentMode=true" className="link link-secondary text-sm">
+                Tryb agenta
               </Link>
             </p>
           </div>

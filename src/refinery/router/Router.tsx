@@ -1,19 +1,26 @@
 // src/refinery/router/Router.tsx
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { collectRoutes } from "./routeCollector";
+import React from "react";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { AutoPage } from "./AutoPage";
 
-export const Router: React.FC = () => {
-  const routes = collectRoutes();
-  
-  return (
-    <BrowserRouter>
-      <Routes>
-        {Object.keys(routes).map((path) => (
-          <Route key={path} path={path} element={<AutoPage />} />
-        ))}
-        <Route path="*" element={<AutoPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
+const globalLoader = async ({ request }: { request: Request }) => {
+  const url = new URL(request.url);
+  return { agentMode: url.searchParams.get("agentMode") === "true" };
 };
+
+// Dodaj statyczny redirect dla głównej strony
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/auth/login" replace />
+  },
+  {
+    path: "*", // Wszystkie inne ścieżki
+    loader: globalLoader,
+    element: <AutoPage />
+  }
+]);
+
+export function Router() {
+  return <RouterProvider router={router} />;
+}

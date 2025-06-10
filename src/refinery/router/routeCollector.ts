@@ -1,43 +1,48 @@
 // src/refinery/router/routeCollector.ts
-import { RouteModule, RouteConfig, CollectedRoutes } from './types';
+import { RouteModule, RouteConfig, CollectedRoutes } from "./types";
 
-const routeModules = import.meta.glob('../../pages/**/*.tsx', { eager: true }) as Record<string, RouteModule>;
+const modules = import.meta.glob("../../pages/**/*.tsx", { eager: true }) as Record<string, RouteModule>;
 
-export const collectRoutes = (): CollectedRoutes => {
+export function collectRoutes(agentMode: boolean = false): CollectedRoutes {
   const routes: CollectedRoutes = {};
-  
-  // Debug - sprawdź co zostało załadowane
-  console.log('Found route modules:', Object.keys(routeModules));
-  
-  Object.entries(routeModules).forEach(([path, module]) => {
-    console.log('Processing module:', path, module);
-    const { routeConfig } = module;
+
+  Object.entries(modules).forEach(([path, mod]) => {
+    const p = path.toLowerCase();
     
-    if (routeConfig) {
-      // Obsługa pojedynczego config lub array
-      const configs = Array.isArray(routeConfig) ? routeConfig : [routeConfig];
-      
-      configs.forEach((config: RouteConfig) => {
-        // Wyciągnij nazwę komponentu z ścieżki
-        const componentName = path.split('/').pop()?.replace('.tsx', '') || '';
-        
-        console.log('Adding route:', config.path, config);
-        routes[config.path] = {
-          ...config,
-          component: componentName,
-          modulePath: path
-        };
-      });
+    // Jeśli to plik .agent.tsx, weź go tylko gdy agentMode=true
+    if (p.endsWith(".agent.tsx")) {
+      if (!agentMode) return;
     }
+    // Jeśli to plik .ui.tsx, weź go tylko gdy agentMode=false
+    else if (p.endsWith(".ui.tsx")) {
+      if (agentMode) return;
+    }
+    // Wszystko inne pomijamy
+    else {
+      return;
+    }
+
+    const cfg = mod.routeConfig;
+    if (!cfg) return;
+    
+    const list = Array.isArray(cfg) ? cfg : [cfg];
+    list.forEach((c: RouteConfig) => {
+      routes[c.path] = {
+        ...c,
+        modulePath: path
+      };
+    });
   });
-  
-  // Dodaj redirect dla głównej strony
-  routes["/"] = { 
-    path: "/",
-    title: "Home",
-    redirect: "/dashboard" 
-  };
-  
-  console.log('Final routes:', routes);
+
   return routes;
-};
+}
+
+// Nowa funkcja do pobierania komponentu
+export function getComponentForRoute(modulePath: string, agentMode: boolean) {
+  const mod = modules[modulePath];
+  if (!mod?.default) {
+    console.error(`Nie znaleziono komponentu dla ścieżki: ${modulePath}`);
+    return null;
+  }
+  return mod.default;
+}

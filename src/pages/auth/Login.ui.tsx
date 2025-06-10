@@ -1,5 +1,4 @@
 // src/pages/auth/Login.ui.tsx
-
 import { Link } from 'react-router-dom';
 import { useLogin } from './hooks/useLogin';
 
@@ -95,8 +94,13 @@ export default function LoginUI() {
           <div className="text-center mt-4">
             <p className="text-base-content/70">
               Nie masz konta?{' '}
-              <Link to="/auth/login" className="link link-primary font-medium">
+              <Link to="/auth/register" className="link link-primary font-medium">
                 Zarejestruj się
+              </Link>
+            </p>
+            <p className="text-base-content/70 mt-2">
+              <Link to="/auth/login?agentMode=true" className="link link-secondary text-sm">
+                Tryb agenta
               </Link>
             </p>
           </div>
