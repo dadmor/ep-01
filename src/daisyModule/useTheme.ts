@@ -1,30 +1,21 @@
+// 1. src/hooks/useTheme.ts
 import { useEffect, useState } from 'react';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<'newyork' | 'light'>(
-    () => (localStorage.getItem('theme') as 'newyork' | 'light') || 'newyork'
-  );
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    return (saved as 'light' | 'dark') || 'light';
+  });
 
   useEffect(() => {
-    // Ustaw motyw na <html>
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-
-    // Debug: logi
-    console.log('[useTheme] Zastosowano motyw:', theme);
-    console.log('[useTheme] <html data-theme=>', document.documentElement.getAttribute('data-theme'));
-
-    // Pobierz i pokaż wartości CSS
-    const styles = getComputedStyle(document.documentElement);
-    console.log('[useTheme] --p (primary):', styles.getPropertyValue('--p'));
-    console.log('[useTheme] --b1 (base-100):', styles.getPropertyValue('--b1'));
   }, [theme]);
 
   const toggle = () => {
-    const newTheme = theme === 'newyork' ? 'light' : 'newyork';
-    console.log('[useTheme] Zmieniam motyw na:', newTheme);
-    setTheme(newTheme);
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  return { theme, toggle };
+  return { theme, toggle, setTheme };
 }
+

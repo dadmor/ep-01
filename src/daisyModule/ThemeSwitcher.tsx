@@ -1,11 +1,18 @@
-// src/daisyModule/ThemeSwitcher.tsx
-import { useTheme } from './useTheme';
+// 2. src/components/ThemeSwitcher.tsx
 
-export default function ThemeSwitcher() {
+import { useTheme } from "./useTheme";
+
+
+export function ThemeSwitcher() {
   const { theme, toggle } = useTheme();
+  
   return (
-    <button className="btn" onClick={toggle}>
-      Motyw: {theme === 'newyork' ? '🌆 NewYork' : '☀️ Light'}
+    <button 
+      onClick={toggle}
+      className="btn btn-ghost btn-sm"
+      aria-label="Przełącz motyw"
+    >
+      {theme === 'light' ? '🌙' : '☀️'}
     </button>
   );
 }
