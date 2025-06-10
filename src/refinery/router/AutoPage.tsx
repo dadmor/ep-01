@@ -1,8 +1,39 @@
 // src/refinery/router/AutoPage.tsx
 import React, { useEffect, useMemo } from "react";
-import { useLoaderData, useLocation } from "react-router-dom";
+import { useLoaderData, useLocation, useParams } from "react-router-dom";
 import { collectRoutes, getComponentForRoute } from "./routeCollector";
 import { ProtectedRoute } from "./ProtectedRoute";
+
+// Funkcja do dopasowywania ścieżki z parametrami
+function matchRoute(pathname: string, routePath: string): boolean {
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const routeSegments = routePath.split('/').filter(Boolean);
+  
+  if (pathSegments.length !== routeSegments.length) {
+    return false;
+  }
+  
+  return routeSegments.every((segment, index) => {
+    return segment.startsWith(':') || segment === pathSegments[index];
+  });
+}
+
+// Funkcja do znajdowania konfiguracji route'a
+function findRouteConfig(pathname: string, routes: Record<string, any>) {
+  // Najpierw spróbuj dokładnego dopasowania
+  if (routes[pathname]) {
+    return routes[pathname];
+  }
+  
+  // Następnie spróbuj dopasowania z parametrami
+  for (const [routePath, config] of Object.entries(routes)) {
+    if (matchRoute(pathname, routePath)) {
+      return config;
+    }
+  }
+  
+  return null;
+}
 
 export const AutoPage: React.FC = () => {
   const { agentMode = false } = useLoaderData() as { agentMode?: boolean };
@@ -11,7 +42,7 @@ export const AutoPage: React.FC = () => {
   // Memoizuj routes żeby nie zbierać ich przy każdym renderze
   const routes = useMemo(() => collectRoutes(agentMode), [agentMode]);
   
-  const config = routes[pathname];
+  const config = findRouteConfig(pathname, routes);
   
   if (!config) {
     return (
@@ -46,7 +77,7 @@ export const AutoPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Błąd ładowania komponenetu</h1>
+          <h1 className="text-2xl font-bold mb-4">Błąd ładowania komponentu</h1>
           <p className="text-gray-600">Nie można załadować komponentu dla: {pathname}</p>
         </div>
       </div>

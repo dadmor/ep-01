@@ -2,12 +2,33 @@
 import { useParams } from 'react-router-dom';
 import { useFetch } from '@/pages/api/hooks';
 
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+}
+
+interface Task {
+  id: string;
+  question_text: string;
+  options?: string[];
+}
+
 export const routeConfig = { path: "/student/lesson/:id", title: "Lesson" };
 
 export default function StudentLesson() {
-  const { id } = useParams();
-  const { data: articles } = useFetch(`lesson-${id}-articles`, `articles?lesson_id=eq.${id}`);
-  const { data: tasks } = useFetch(`lesson-${id}-tasks`, `tasks?lesson_id=eq.${id}`);
+  // Generyczne typowanie parametru z useParams
+  const { id } = useParams<{ id: string }>();
+
+  // Pobranie danych z odpowiednimi typami (z pojedynczym T, aby useFetch zwracało Article[] i Task[])
+  const { data: articles } = useFetch<Article>(
+    `lesson-${id}-articles`,
+    `articles?lesson_id=eq.${id}`
+  );
+  const { data: tasks } = useFetch<Task>(
+    `lesson-${id}-tasks`,
+    `tasks?lesson_id=eq.${id}`
+  );
 
   return (
     <div className="p-4 max-w-4xl mx-auto">

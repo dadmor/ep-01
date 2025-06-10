@@ -1,5 +1,4 @@
 // src/pages/api/hooks.ts
-
 import { supabase } from '@/utility';
 import { 
   useQuery, 
@@ -51,6 +50,65 @@ export function useInsert<T = any>(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [key] });
+    }
+  });
+}
+
+/**
+ * useUpdate - aktualizuje rekord w podanej tabeli i odświeża zapytanie
+ * @template T
+ * @param {string} key - klucz zapytania React Query do odświeżenia
+ * @param {string} table - nazwa tabeli w Supabase
+ * @returns {UseMutationResult<T[], Error, { id: string, updates: Partial<T> }>}
+ */
+export function useUpdate<T = any>(
+  key: string, 
+  table: string
+): UseMutationResult<T[], Error, { id: string, updates: Partial<T> }> {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string, updates: Partial<T> }): Promise<T[]> => {
+      const { data, error } = await supabase
+        .from(table)
+        .update(updates)
+        .eq('id', id)  // Keep as string for UUID comparison
+        .select();
+      if (error) throw error;
+      return data || [];
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [key] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-edit'] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-detail'] });
+    }
+  });
+}
+
+/**
+ * useDelete - usuwa rekord z podanej tabeli i odświeża zapytanie
+ * @param {string} key - klucz zapytania React Query do odświeżenia
+ * @param {string} table - nazwa tabeli w Supabase
+ * @returns {UseMutationResult<void, Error, { id: string }>}
+ */
+export function useDelete(
+  key: string, 
+  table: string
+): UseMutationResult<void, Error, { id: string }> {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }): Promise<void> => {
+      const { error } = await supabase
+        .from(table)
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [key] });
+      queryClient.invalidateQueries({ queryKey: ['lesson-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
     }
   });
 }

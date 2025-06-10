@@ -1,15 +1,18 @@
-// src/pages/teacher/ui.CreateLesson.tsx
-import { useInsert } from '@/pages/api/hooks';
+// src/pages/teacher/ui.EditLesson.tsx
+import { useFetch, useUpdate } from '@/pages/api/hooks';
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-export const routeConfig = { path: "/teacher/lessons/create", title: "Create Lesson" };
+export const routeConfig = { path: "/teacher/lessons/:id/edit", title: "Edit Lesson" };
 
-export default function CreateLesson() {
+export default function EditLesson() {
+  const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const insertLesson = useInsert('teacher-lessons', 'lessons');
+  
+  const { data: lessons, isLoading } = useFetch('lesson-edit', `lessons?id=eq.${id}`);
+  const updateLesson = useUpdate('teacher-lessons', 'lessons');
   
   const [form, setForm] = useState({
     title: '',
@@ -19,18 +22,63 @@ export default function CreateLesson() {
     topic: ''
   });
 
+  const lessonData = lessons?.[0];
+
+  // Wypełnij formularz gdy dane się załadują
+  useEffect(() => {
+    if (lessonData) {
+      setForm({
+        title: lessonData.title || '',
+        description: lessonData.description || '',
+        subject: lessonData.subject || '',
+        grade: lessonData.grade || '',
+        topic: lessonData.topic || ''
+      });
+    }
+  }, [lessonData]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) return;
+    
     try {
-      await insertLesson.mutateAsync({
-        ...form,
-        author_id: user?.id
+      // Don't parse id as integer - keep it as string since it's a UUID
+      await updateLesson.mutateAsync({
+        id: id, // Keep as string
+        updates: form
       });
-      navigate('/teacher/lessons');
+      navigate(`/teacher/lessons/${id}`);
     } catch (error) {
-      console.error('Error creating lesson:', error);
+      console.error('Error updating lesson:', error);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  if (!lessonData) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body text-center">
+            <h2 className="text-xl font-medium mb-2">Lekcja nie została znaleziona</h2>
+            <p className="text-base-content/70 mb-4">Nie można znaleźć lekcji o podanym ID.</p>
+            <button 
+              onClick={() => navigate('/teacher/lessons')}
+              className="btn btn-primary"
+            >
+              ← Powrót do listy lekcji
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200 p-4">
@@ -39,9 +87,10 @@ export default function CreateLesson() {
         <div className="card bg-base-100 shadow-sm mb-6">
           <div className="card-body py-4">
             <h1 className="card-title text-2xl">
-              <span className="text-primary">📝</span>
-              Nowa lekcja
+              <span className="text-primary">✏️</span>
+              Edytuj lekcję
             </h1>
+            <p className="text-base-content/70">ID: {id}</p>
           </div>
         </div>
 
@@ -134,26 +183,25 @@ export default function CreateLesson() {
                 <div className="card-actions justify-end">
                   <button 
                     type="button"
-                    onClick={() => navigate('/teacher/lessons')}
+                    onClick={() => navigate(`/teacher/lessons/${id}`)}
                     className="btn btn-ghost"
                   >
                     Anuluj
                   </button>
                   <button 
                     type="submit"
-                    onClick={handleSubmit}
                     className="btn btn-primary"
-                    disabled={insertLesson.isPending}
+                    disabled={updateLesson.isPending}
                   >
-                    {insertLesson.isPending ? (
+                    {updateLesson.isPending ? (
                       <>
                         <span className="loading loading-spinner loading-sm"></span>
-                        Tworzenie...
+                        Zapisywanie...
                       </>
                     ) : (
                       <>
-                        <span>✅</span>
-                        Utwórz lekcję
+                        <span>💾</span>
+                        Zapisz zmiany
                       </>
                     )}
                   </button>
