@@ -1,7 +1,7 @@
-// src/pages/auth/Register.agent.tsx
+// src/pages/auth/agent.Register.tsx
 import { DataDisplay } from "@/components/ui/agent";
-import { useInsert } from "../api/hooks";
-
+import { useAuth } from '@/hooks/useAuth'; // ✅ Użyj gotowego AuthContext
+import { useState } from 'react';
 
 export const routeConfig = {
   path: "/auth/register",
@@ -15,12 +15,30 @@ const mockRegister = {
 };
 
 export default function RegisterAgent() {
-  const mutation = useInsert("register", "users");
+  const { register, loading } = useAuth(); // ✅ Użyj gotowego register
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<any>(null);
+
+  const handleTestRegistration = async () => {
+    setError(null);
+    setData(null);
+    
+    try {
+      await register(mockRegister.email, mockRegister.password, mockRegister.username);
+      setData({ 
+        success: true, 
+        message: 'Rejestracja udana! Sprawdź email w celu potwierdzenia konta.' 
+      });
+    } catch (err) {
+      setError(err as Error);
+    }
+  };
   
   return (
     <div className="card bg-base-100 shadow-xl max-w-2xl mx-auto">
       <div className="card-body">
         <h2 className="card-title">Rejestracja</h2>
+        <p className="text-base-content/70">Testowanie rejestracji z danymi przykładowymi</p>
        
         <DataDisplay 
           data={mockRegister} 
@@ -30,23 +48,23 @@ export default function RegisterAgent() {
         
         <div className="card-actions">
           <button
-            className={`btn btn-primary ${mutation.isPending ? "loading" : ""}`}
-            onClick={() => mutation.mutate(mockRegister)}
-            disabled={mutation.isPending}
+            className={`btn btn-primary ${loading ? "loading" : ""}`}
+            onClick={handleTestRegistration}
+            disabled={loading}
           >
-            {mutation.isPending ? "Wysyłanie..." : "🚀 Wyślij dane testowe"}
+            {loading ? "Wysyłanie..." : "🚀 Wyślij dane testowe"}
           </button>
         </div>
         
-        {mutation.error && (
+        {error && (
           <div className="alert alert-error">
-            <span>❌ Błąd: {mutation.error.message}</span>
+            <span>❌ Błąd: {error.message}</span>
           </div>
         )}
         
-        {mutation.data && (
+        {data && (
           <DataDisplay 
-            data={mutation.data} 
+            data={data} 
             title="📨 Odpowiedź serwera"
             isCollapsible={false}
           />

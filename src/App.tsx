@@ -1,6 +1,7 @@
 // src/App.tsx
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Router } from "@/refinery/router";
+import { AuthProvider } from "@/hooks/useAuth"; // ✅ Import AuthProvider
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,9 +15,11 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="App">
-        <Router />
-      </div>
+      <AuthProvider> {/* ✅ AuthProvider musi owijać całą aplikację */}
+        <div className="App">
+          <Router />
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

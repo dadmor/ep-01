@@ -1,7 +1,7 @@
-// src/pages/auth/Register.ui.tsx
+// src/pages/auth/ui.Register.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useInsert } from '../api/hooks';
+import { useAuth } from '@/hooks/useAuth'; // ✅ Użyj gotowego AuthContext
 
 export const routeConfig = {
   path: "/auth/register",
@@ -16,13 +16,6 @@ interface RegisterFormData {
   confirmPassword: string;
 }
 
-// Typ dla API (bez confirmPassword)
-interface RegisterApiData {
-  email: string;
-  username: string;
-  password: string;
-}
-
 export default function RegisterUI() {
   const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
@@ -31,7 +24,10 @@ export default function RegisterUI() {
     confirmPassword: ''
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const mutation = useInsert<RegisterApiData>('register', 'users');
+  const [error, setError] = useState<Error | null>(null);
+  const [success, setSuccess] = useState(false);
+  
+  const { register, loading } = useAuth(); // ✅ Użyj gotowego register z AuthContext
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,14 +42,22 @@ export default function RegisterUI() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordMatch) return;
-    const { confirmPassword, ...apiData } = formData;
-    mutation.mutate(apiData);
+    
+    setError(null);
+    setSuccess(false);
+    
+    try {
+      await register(formData.email, formData.password, formData.username);
+      setSuccess(true);
+    } catch (err) {
+      setError(err as Error);
+    }
   };
 
-  const handleTestData = () => {
+  const handleTestData = async () => {
     const mock: RegisterFormData = {
       email: 'new@example.com',
       username: 'newuser',
@@ -61,8 +65,15 @@ export default function RegisterUI() {
       confirmPassword: 'password123'
     };
     setFormData(mock);
-    const { confirmPassword, ...apiData } = mock;
-    mutation.mutate(apiData);
+    setError(null);
+    setSuccess(false);
+    
+    try {
+      await register(mock.email, mock.password, mock.username);
+      setSuccess(true);
+    } catch (err) {
+      setError(err as Error);
+    }
   };
 
   return (
@@ -142,25 +153,25 @@ export default function RegisterUI() {
               )}
             </div>
 
-            {mutation.error && (
+            {error && (
               <div className="alert alert-error">
-                <span>{mutation.error.message}</span>
+                <span>{error.message}</span>
               </div>
             )}
 
-            {mutation.data && (
+            {success && (
               <div className="alert alert-success">
-                <span>Rejestracja udana!</span>
+                <span>Rejestracja udana! Sprawdź email w celu potwierdzenia konta.</span>
               </div>
             )}
 
             <div className="form-control mt-6">
               <button
                 type="submit"
-                className={`btn btn-primary w-full ${mutation.isPending ? 'loading' : ''}`}
-                disabled={mutation.isPending || !passwordMatch}
+                className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+                disabled={loading || !passwordMatch}
               >
-                {mutation.isPending ? 'Rejestrowanie...' : 'Zarejestruj się'}
+                {loading ? 'Rejestrowanie...' : 'Zarejestruj się'}
               </button>
             </div>
           </form>
@@ -170,7 +181,7 @@ export default function RegisterUI() {
           <button
             onClick={handleTestData}
             className="btn btn-outline btn-secondary w-full"
-            disabled={mutation.isPending}
+            disabled={loading}
           >
             Użyj danych testowych
           </button>

@@ -189,7 +189,6 @@ CREATE INDEX idx_tasks_lesson_id         ON tasks(lesson_id);
 CREATE INDEX idx_tasks_article_id        ON tasks(article_id);
 CREATE INDEX idx_progress_user_id        ON progress(user_id);
 CREATE INDEX idx_progress_lesson_id      ON progress(lesson_id);
-CREATE INDEX idx_progress_user_date      ON progress(user_id, (completed_at::date));
 CREATE INDEX idx_user_badges_user_id     ON user_badges(user_id);
 CREATE INDEX idx_user_badges_badge_id    ON user_badges(badge_id);
 CREATE INDEX idx_badge_criteria_badge_id ON badge_criteria(badge_id);

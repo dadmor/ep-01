@@ -1,195 +1,131 @@
-// src/hooks/useAuth.tsx
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+// src/hooks/useAuth.tsx - NAPRAWIONA WERSJA
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/utility";
 
 export type User = {
   id: string;
   email: string;
+  username?: string;
   role: string;
+  avatar_url?: string;
+  xp?: number;
+  level?: number;
+  streak?: number;
+  created_at?: string;
 };
 
 type AuthContextType = {
   user: User | null;
-  delegatedUser: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, username?: string) => Promise<void>;
   logout: () => Promise<void>;
-  resendConfirmationEmail: (
-    email: string,
-    options?: { emailRedirectTo?: string }
-  ) => Promise<void>;
-  setDelegatedUser: (user: User | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [delegatedUser, setDelegatedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function fetchUser(id: string) {
-    const { data, error } = await supabase
-      .from("users")
-      .select("id, email, role, first_name, last_name")
-      .eq("id", id)
-      .maybeSingle();
-    if (error) throw error;
-    if (data) {
-      setUser(data);
-    } else {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user) {
-        const authUser = session.user as any;
-        setUser({
-          id: authUser.id,
-          email: authUser.email ?? "",
-          role: authUser.role ?? "user",
-        });
-      }
-    }
-  }
-
-  async function fetchDelegatedUser(id: string): Promise<User | null> {
-    const { data, error } = await supabase
-      .from("users")
-      .select("id, email, role")
-      .eq("id", id)
-      .maybeSingle();
-    if (error) {
-      console.error("Error fetching delegated user:", error);
-      return null;
-    }
-    return data;
-  }
-
-  const handleSetDelegatedUser = async (userToDelegate: User | null) => {
-    if (userToDelegate) {
-      const canDelegate = await checkDelegationPermissions(
-        user?.id,
-        userToDelegate.id
-      );
-      if (canDelegate) setDelegatedUser(userToDelegate);
-      else throw new Error("Brak uprawnień do delegacji dla tego użytkownika");
-    } else {
-      setDelegatedUser(null);
-    }
-  };
-
-  async function checkDelegationPermissions(
-    delegatorId?: string,
-    targetUserId?: string
-  ): Promise<boolean> {
-    if (!delegatorId || !targetUserId) return false;
-    const { data, error } = await supabase
-      .from("user_delegations")
-      .select("*")
-      .eq("delegator_id", delegatorId)
-      .eq("target_user_id", targetUserId)
-      .eq("is_active", true)
-      .maybeSingle();
-    if (error) {
-      console.error("Error checking delegation permissions:", error);
-      return false;
-    }
-    return !!data;
-  }
-
-  useEffect(() => {
-    // ✅ Poprawione - async funkcja w środku
-    const initializeAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user) await fetchUser(session.user.id);
-      setLoading(false);
-    };
-
-    initializeAuth();
-
-    // ✅ Poprawione - callback nie zwraca Promise
-    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user) {
-        // Nie await'ujemy tutaj - fetchUser wykona się asynchronicznie
-        fetchUser(session.user.id).catch(console.error);
-      } else {
-        setUser(null);
-        setDelegatedUser(null);
-      }
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  async function login(email: string, password: string) {
-    setLoading(true);
+  const login = async (email: string, password: string) => {
+    console.log("🔐 LOGIN WYWOŁANY:", { email });
+    
     try {
+      console.log("📤 WYSYŁAM ZAPYTANIE DO SUPABASE...");
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      console.log("📥 ODPOWIEDŹ Z SUPABASE:", { 
+        hasData: !!data, 
+        hasError: !!error,
+        errorMessage: error?.message 
+      });
+      
       if (error) {
-        console.log("Login error from Supabase:", error);
+        console.error("❌ BŁĄD LOGOWANIA:", error);
         throw error;
       }
-      if (data.session?.user) await fetchUser(data.session.user.id);
-    } finally {
-      setLoading(false);
+      
+      console.log("✅ LOGOWANIE UDANE");
+      
+    } catch (error) {
+      console.error("💥 WYJĄTEK W LOGIN:", error);
+      throw error;
     }
-  }
+  };
 
-  async function logout() {
+  const register = async (email: string, password: string, username?: string) => {
+    console.log("📝 REGISTER WYWOŁANY:", { email, username });
+    
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username: username || email.split('@')[0] }
+        }
+      });
+      
+      if (error) throw error;
+      
+    } catch (error) {
+      console.error("💥 BŁĄD REJESTRACJI:", error);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     setUser(null);
-    setDelegatedUser(null);
-  }
+  };
 
-  async function resendConfirmationEmail(
-    email: string,
-    options?: { emailRedirectTo?: string }
-  ) {
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email,
-      options: {
-        emailRedirectTo: options?.emailRedirectTo || 
-          import.meta.env.VITE_SITE_URL + '/auth/callback' || 
-          window.location.origin + '/auth/callback',
-      },
+  useEffect(() => {
+    console.log("🚀 USEAUTH INICJALIZACJA");
+    
+    // Sprawdź aktualną sesję
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("📋 AKTUALNA SESJA:", !!session);
+      setLoading(false);
     });
-    if (error) throw error;
-  }
+
+    // Listener na zmiany
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("🔄 AUTH STATE CHANGE:", { event, hasSession: !!session });
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || "",
+            role: "user"
+          });
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  console.log("🔍 USEAUTH RENDER:", { hasUser: !!user, loading });
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        delegatedUser,
-        loading,
-        login,
-        logout,
-        resendConfirmationEmail,
-        setDelegatedUser: handleSetDelegatedUser,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth(): AuthContextType {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
 }
