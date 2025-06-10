@@ -8,22 +8,30 @@ export const routeConfig = {
   title: "Register"
 };
 
-interface RegisterData {
+// Typ dla formularza (z confirmPassword)
+interface RegisterFormData {
   email: string;
   username: string;
   password: string;
   confirmPassword: string;
 }
 
+// Typ dla API (bez confirmPassword)
+interface RegisterApiData {
+  email: string;
+  username: string;
+  password: string;
+}
+
 export default function RegisterUI() {
-  const [formData, setFormData] = useState<RegisterData>({
+  const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
     username: '',
     password: '',
     confirmPassword: ''
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const mutation = useInsert<RegisterData>('register', 'users');
+  const mutation = useInsert<RegisterApiData>('register', 'users');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,23 +49,20 @@ export default function RegisterUI() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordMatch) return;
-    const { confirmPassword, ...data } = formData;
-    mutation.mutate(data);
+    const { confirmPassword, ...apiData } = formData;
+    mutation.mutate(apiData);
   };
 
   const handleTestData = () => {
-    const mock = {
+    const mock: RegisterFormData = {
       email: 'new@example.com',
       username: 'newuser',
       password: 'password123',
       confirmPassword: 'password123'
     };
     setFormData(mock);
-    mutation.mutate({
-      email: mock.email,
-      username: mock.username,
-      password: mock.password
-    });
+    const { confirmPassword, ...apiData } = mock;
+    mutation.mutate(apiData);
   };
 
   return (

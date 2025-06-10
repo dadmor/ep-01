@@ -7,14 +7,20 @@ export function collectRoutes(agentMode: boolean = false): CollectedRoutes {
   const routes: CollectedRoutes = {};
 
   Object.entries(modules).forEach(([path, mod]) => {
-    const p = path.toLowerCase();
+    const fileName = path.split('/').pop()?.toLowerCase() || '';
     
-    // Jeśli to plik .agent.tsx, weź go tylko gdy agentMode=true
-    if (p.endsWith(".agent.tsx")) {
+    // Nowy wzorzec: agent.ComponentName.tsx lub ui.ComponentName.tsx
+    if (fileName.startsWith("agent.")) {
       if (!agentMode) return;
     }
-    // Jeśli to plik .ui.tsx, weź go tylko gdy agentMode=false
-    else if (p.endsWith(".ui.tsx")) {
+    else if (fileName.startsWith("ui.")) {
+      if (agentMode) return;
+    }
+    // Stary wzorzec: ComponentName.agent.tsx lub ComponentName.ui.tsx (dla kompatybilności)
+    else if (fileName.endsWith(".agent.tsx")) {
+      if (!agentMode) return;
+    }
+    else if (fileName.endsWith(".ui.tsx")) {
       if (agentMode) return;
     }
     // Wszystko inne pomijamy
