@@ -1,12 +1,14 @@
-// src/hooks/useAuth.tsx - NAPRAWIONA WERSJA
+// src/hooks/useAuth.tsx - ROZSZERZONA WERSJA Z ROLAMI
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/utility";
+
+export type UserRole = "student" | "teacher";
 
 export type User = {
   id: string;
   email: string;
   username?: string;
-  role: string;
+  role: UserRole;
   avatar_url?: string;
   xp?: number;
   level?: number;
@@ -18,7 +20,7 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, username?: string) => Promise<void>;
+  register: (email: string, password: string, username?: string, role?: UserRole) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -58,15 +60,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, username?: string) => {
-    console.log("📝 REGISTER WYWOŁANY:", { email, username });
+  const register = async (email: string, password: string, username?: string, role: UserRole = "student") => {
+    console.log("📝 REGISTER WYWOŁANY:", { email, username, role });
     
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { username: username || email.split('@')[0] }
+          data: { 
+            username: username || email.split('@')[0],
+            role: role
+          }
         }
       });
       
@@ -99,10 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("🔄 AUTH STATE CHANGE:", { event, hasSession: !!session });
         
         if (session?.user) {
+          const userRole = (session.user.user_metadata?.role as UserRole) || "student";
           setUser({
             id: session.user.id,
             email: session.user.email || "",
-            role: "user"
+            username: session.user.user_metadata?.username,
+            role: userRole
           });
         } else {
           setUser(null);

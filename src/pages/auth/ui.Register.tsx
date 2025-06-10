@@ -1,19 +1,19 @@
-// src/pages/auth/ui.Register.tsx
+// src/pages/auth/ui.Register.tsx - ROZSZERZONA WERSJA Z WYBOREM ROLI
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth'; // ✅ Użyj gotowego AuthContext
+import { useAuth, UserRole } from '@/hooks/useAuth';
 
 export const routeConfig = {
   path: "/auth/register",
   title: "Register"
 };
 
-// Typ dla formularza (z confirmPassword)
 interface RegisterFormData {
   email: string;
   username: string;
   password: string;
   confirmPassword: string;
+  role: UserRole;
 }
 
 export default function RegisterUI() {
@@ -21,15 +21,16 @@ export default function RegisterUI() {
     email: '',
     username: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'student'
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [success, setSuccess] = useState(false);
   
-  const { register, loading } = useAuth(); // ✅ Użyj gotowego register z AuthContext
+  const { register, loading } = useAuth();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -50,26 +51,27 @@ export default function RegisterUI() {
     setSuccess(false);
     
     try {
-      await register(formData.email, formData.password, formData.username);
+      await register(formData.email, formData.password, formData.username, formData.role);
       setSuccess(true);
     } catch (err) {
       setError(err as Error);
     }
   };
 
-  const handleTestData = async () => {
+  const handleTestData = async (role: UserRole) => {
     const mock: RegisterFormData = {
-      email: 'new@example.com',
-      username: 'newuser',
+      email: role === 'student' ? 'student@example.com' : 'teacher@example.com',
+      username: role === 'student' ? 'teststudent' : 'testteacher',
       password: 'password123',
-      confirmPassword: 'password123'
+      confirmPassword: 'password123',
+      role: role
     };
     setFormData(mock);
     setError(null);
     setSuccess(false);
     
     try {
-      await register(mock.email, mock.password, mock.username);
+      await register(mock.email, mock.password, mock.username, mock.role);
       setSuccess(true);
     } catch (err) {
       setError(err as Error);
@@ -116,6 +118,23 @@ export default function RegisterUI() {
                 className="input input-bordered w-full"
                 required
               />
+            </div>
+
+            {/* NOWE: Wybór roli */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Rola</span>
+              </label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+                className="select select-bordered w-full"
+                required
+              >
+                <option value="student">🎓 Student</option>
+                <option value="teacher">👨‍🏫 Nauczyciel</option>
+              </select>
             </div>
 
             <div className="form-control">
@@ -178,13 +197,22 @@ export default function RegisterUI() {
 
           <div className="divider">LUB</div>
 
-          <button
-            onClick={handleTestData}
-            className="btn btn-outline btn-secondary w-full"
-            disabled={loading}
-          >
-            Użyj danych testowych
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleTestData('student')}
+              className="btn btn-outline btn-info flex-1"
+              disabled={loading}
+            >
+              🎓 Test Student
+            </button>
+            <button
+              onClick={() => handleTestData('teacher')}
+              className="btn btn-outline btn-secondary flex-1"
+              disabled={loading}
+            >
+              👨‍🏫 Test Teacher
+            </button>
+          </div>
 
           <div className="text-center mt-4">
             <p className="text-base-content/70">
