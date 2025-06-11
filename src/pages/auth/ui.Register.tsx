@@ -1,11 +1,11 @@
 // src/pages/auth/ui.Register.tsx - ROZSZERZONA WERSJA Z WYBOREM ROLI
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth, UserRole } from '@/hooks/useAuth';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth, UserRole } from "@/hooks/useAuth";
 
 export const routeConfig = {
   path: "/auth/register",
-  title: "Register"
+  title: "Register",
 };
 
 interface RegisterFormData {
@@ -18,27 +18,30 @@ interface RegisterFormData {
 
 export default function RegisterUI() {
   const [formData, setFormData] = useState<RegisterFormData>({
-    email: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    role: 'student'
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    role: "student",
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [success, setSuccess] = useState(false);
-  
+
   const { register, loading } = useAuth();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    if (name === 'password' || name === 'confirmPassword') {
-      const pass = name === 'password' ? value : formData.password;
-      const conf = name === 'confirmPassword' ? value : formData.confirmPassword;
+    if (name === "password" || name === "confirmPassword") {
+      const pass = name === "password" ? value : formData.password;
+      const conf =
+        name === "confirmPassword" ? value : formData.confirmPassword;
       setPasswordMatch(pass === conf);
     }
   };
@@ -46,12 +49,17 @@ export default function RegisterUI() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordMatch) return;
-    
+
     setError(null);
     setSuccess(false);
-    
+
     try {
-      await register(formData.email, formData.password, formData.username, formData.role);
+      await register(
+        formData.email,
+        formData.password,
+        formData.username,
+        formData.role
+      );
       setSuccess(true);
     } catch (err) {
       setError(err as Error);
@@ -60,16 +68,16 @@ export default function RegisterUI() {
 
   const handleTestData = async (role: UserRole) => {
     const mock: RegisterFormData = {
-      email: role === 'student' ? 'student@example.com' : 'teacher@example.com',
-      username: role === 'student' ? 'teststudent' : 'testteacher',
-      password: 'password123',
-      confirmPassword: 'password123',
-      role: role
+      email: role === "student" ? "student@example.com" : "teacher@example.com",
+      username: role === "student" ? "teststudent" : "testteacher",
+      password: "password123",
+      confirmPassword: "password123",
+      role: role,
     };
     setFormData(mock);
     setError(null);
     setSuccess(false);
-    
+
     try {
       await register(mock.email, mock.password, mock.username, mock.role);
       setSuccess(true);
@@ -84,9 +92,7 @@ export default function RegisterUI() {
         <div className="card-body">
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-primary">Rejestracja</h1>
-            <p className="text-base-content/70 mt-2">
-              Utwórz nowe konto
-            </p>
+            <p className="text-base-content/70 mt-2">Utwórz nowe konto</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -107,7 +113,9 @@ export default function RegisterUI() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Nazwa użytkownika</span>
+                <span className="label-text font-medium">
+                  Nazwa użytkownika
+                </span>
               </label>
               <input
                 type="text"
@@ -162,12 +170,18 @@ export default function RegisterUI() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Potwierdź hasło"
-                className={`input input-bordered w-full ${!passwordMatch && formData.confirmPassword ? 'input-error' : ''}`}
+                className={`input input-bordered w-full ${
+                  !passwordMatch && formData.confirmPassword
+                    ? "input-error"
+                    : ""
+                }`}
                 required
               />
               {!passwordMatch && formData.confirmPassword && (
                 <label className="label">
-                  <span className="label-text-alt text-error">Hasła nie pasują</span>
+                  <span className="label-text-alt text-error">
+                    Hasła nie pasują
+                  </span>
                 </label>
               )}
             </div>
@@ -180,50 +194,30 @@ export default function RegisterUI() {
 
             {success && (
               <div className="alert alert-success">
-                <span>Rejestracja udana! Sprawdź email w celu potwierdzenia konta.</span>
+                <span>
+                  Rejestracja udana! Sprawdź email w celu potwierdzenia konta.
+                </span>
               </div>
             )}
 
             <div className="form-control mt-6">
               <button
                 type="submit"
-                className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+                className={`btn btn-primary w-full ${loading ? "loading" : ""}`}
                 disabled={loading || !passwordMatch}
               >
-                {loading ? 'Rejestrowanie...' : 'Zarejestruj się'}
+                {loading ? "Rejestrowanie..." : "Zarejestruj się"}
               </button>
             </div>
           </form>
 
           <div className="divider">LUB</div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleTestData('student')}
-              className="btn btn-outline btn-info flex-1"
-              disabled={loading}
-            >
-              🎓 Test Student
-            </button>
-            <button
-              onClick={() => handleTestData('teacher')}
-              className="btn btn-outline btn-secondary flex-1"
-              disabled={loading}
-            >
-              👨‍🏫 Test Teacher
-            </button>
-          </div>
-
           <div className="text-center mt-4">
             <p className="text-base-content/70">
-              Masz już konto?{' '}
+              Masz już konto?{" "}
               <Link to="/auth/login" className="link link-primary font-medium">
                 Zaloguj się
-              </Link>
-            </p>
-            <p className="text-base-content/70 mt-2">
-              <Link to="/auth/register?agentMode=true" className="link link-secondary text-sm">
-                Tryb agenta
               </Link>
             </p>
           </div>
