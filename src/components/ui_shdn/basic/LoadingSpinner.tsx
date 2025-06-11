@@ -1,26 +1,18 @@
-// src/components/ui_shdn/basic/LoadingSpinner.tsx
-import React from 'react';
-
+// src/components/ui_bloglike/base/LoadingSpinner.tsx
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-  /** Optional message displayed below the spinner */
   message?: string;
 }
-  
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', className = "", message }) => {
-  const sizes = {
-    sm: "w-4 h-4",
-    md: "w-8 h-8",
-    lg: "w-12 h-12"
-  };
-  
+
+export function LoadingSpinner({ message = "Ładowanie..." }: LoadingSpinnerProps) {
   return (
-    <div className={`flex flex-col items-center ${className}`}>      
-      <div className={`border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin ${sizes[size]}`}></div>
-      {message && (
-        <span className="mt-2 text-sm text-slate-600">{message}</span>
-      )}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+      <div className="flex flex-col items-center gap-6 p-8 bg-white rounded-3xl shadow-xl border-2 border-blue-200">
+        <div className="relative">
+          <span className="loading loading-spinner loading-lg text-blue-500"></span>
+          <div className="absolute inset-0 loading loading-spinner loading-lg text-purple-300 animate-pulse"></div>
+        </div>
+        <p className="text-gray-700 font-semibold text-lg">{message}</p>
+      </div>
     </div>
   );
-};
+}

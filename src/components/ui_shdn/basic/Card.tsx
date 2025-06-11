@@ -1,22 +1,24 @@
-// src/components/ui_shdn/basic/Card.tsx
-import React from 'react';
+// src/components/ui_bloglike/base/Card.tsx
+import { ReactNode } from 'react';
 
 interface CardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
-  /** Czy włączyć efekt hover */
   hover?: boolean;
+  colorful?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = "", hover = true }) => {
-  const baseClasses = `bg-white rounded-lg border border-slate-200 shadow-sm ${className}`;
-  const hoverClasses = hover
-    ? ' hover:shadow-md transform hover:scale-103 transition duration-150 ease-in-out'
-    : '';
-
+export function Card({ children, className = '', hover = false, colorful = false }: CardProps) {
   return (
-    <div className={`${baseClasses}${hoverClasses}`}>      
+    <div 
+      className={`
+        card rounded-2xl border-2 shadow-lg
+        ${colorful ? 'bg-gradient-to-br from-white to-blue-50 border-blue-200' : 'bg-white border-gray-200'}
+        ${hover ? 'hover:shadow-xl hover:scale-[1.02] transition-all duration-300' : ''}
+        ${className}
+      `}
+    >
       {children}
     </div>
   );
-};
+}

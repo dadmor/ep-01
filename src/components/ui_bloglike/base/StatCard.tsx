@@ -1,24 +1,34 @@
-// src/components/ui/StatCard.tsx
+// src/components/ui_bloglike/base/StatCard.tsx
 import { ReactNode } from 'react';
-import { Card } from '.';
+import { Card } from './Card';
+import { colorPalette } from '../colors';
+
 
 interface StatCardProps {
   title: string;
   value: string | number;
   icon: ReactNode;
-  iconBg: string;
+  color?: 'blue' | 'green' | 'purple' | 'amber' | 'rose' | 'yellow';
 }
 
-export function StatCard({ title, value, icon, iconBg }: StatCardProps) {
+export function StatCard({ title, value, icon, color = 'blue' }: StatCardProps) {
+  const style = colorPalette[color];
+
   return (
     <Card hover className="p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500 tracking-wide uppercase">{title}</p>
-          <p className="text-3xl font-bold text-slate-900 font-serif tracking-tight">{value}</p>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-500 mb-2 tracking-wide">
+            {title}
+          </p>
+          <p className={`text-2xl font-bold ${style.text} tracking-tight`}>
+            {value}
+          </p>
         </div>
-        <div className={`w-12 h-12 ${iconBg} rounded-lg flex items-center justify-center shadow-sm`}>
-          {icon}
+        <div className={`w-12 h-12 ${style.bg} rounded-xl flex items-center justify-center border border-gray-200/40`}>
+          <div className={style.text}>
+            {icon}
+          </div>
         </div>
       </div>
     </Card>
