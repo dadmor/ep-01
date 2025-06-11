@@ -2,6 +2,7 @@
 import { useFetch } from '@/pages/api/hooks';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { TeacherPageLayout } from '@/components/layout/TeacherPageLayout';
 
 export const routeConfig = { path: "/teacher/dashboard", title: "Teacher Dashboard" };
 
@@ -19,8 +20,7 @@ export default function TeacherDashboard() {
     Math.round(recentProgress.reduce((sum, p) => sum + p.score, 0) / recentProgress.length) : 0;
 
   return (
-    <div className="min-h-screen bg-base-200 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <TeacherPageLayout showPadding={true} title="Uczniowie" subtitle="Lista uczniów">
         
         {/* Header Card */}
         <div className="card bg-base-100 shadow-sm">
@@ -176,7 +176,6 @@ export default function TeacherDashboard() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </TeacherPageLayout>
   );
 }

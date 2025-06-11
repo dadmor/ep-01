@@ -1,4 +1,5 @@
 // src/pages/teacher/ui.LessonDetail.tsx
+import { TeacherPageLayout } from '@/components/layout/TeacherPageLayout';
 import { useFetch } from '@/pages/api/hooks';
 import { useParams, Link } from 'react-router-dom';
 
@@ -21,8 +22,7 @@ export default function LessonDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 p-4">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <TeacherPageLayout showPadding={true} title="Uczniowie" subtitle="Lista uczniów">
         
         {/* Header Card */}
         <div className="card bg-base-100 shadow-sm">
@@ -178,7 +178,6 @@ export default function LessonDetail() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </TeacherPageLayout>
   );
 }

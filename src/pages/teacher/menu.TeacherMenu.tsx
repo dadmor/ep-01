@@ -27,8 +27,9 @@ export interface MenuItem {
 
 export const menuItems = {
   teacher: [
-    { path: "/teeacher/lessons", label: "Lekcje", icon: Home },
-    { path: "/teeacher/students", label: "Studenci", icon: BookOpen },
+    { path: "/teacher/dashboard", label: "Panel główny", icon: Home },
+    { path: "/teacher/lessons", label: "Lekcje", icon: Home },
+    { path: "/teacher/students", label: "Studenci", icon: BookOpen },
   ],
 } as const;
 
