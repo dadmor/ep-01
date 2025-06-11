@@ -1,5 +1,6 @@
 // src/components/PageHeader.tsx
 
+import { Info } from "@/components/uiBase/Info";
 import { colorPalette } from "../colors";
 
 interface PageHeaderProps {
@@ -39,10 +40,7 @@ export function PageHeader({
     <div className={`border-b border-slate-200 bg-base-100 ${className}`}>
       <div className="container space-y-1 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-16">
         <div className={`border-l-8 pl-8 space-y-2 ${variantBorders[variant]}`}>
-          <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-4xl">
-            {title}
-          </h1>
-          <p className="text-lg text-muted-foreground sm:text-xl">{subtitle}</p>
+          <Info title={title} subtitle={subtitle} />
         </div>
       </div>
     </div>

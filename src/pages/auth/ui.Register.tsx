@@ -1,7 +1,9 @@
-// src/pages/auth/ui.Register.tsx - ROZSZERZONA WERSJA Z WYBOREM ROLI
+// src/pages/auth/ui.Register.tsx - Z REACT HOOK FORM
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useAuth, UserRole } from "@/hooks/useAuth";
+
 
 export const routeConfig = {
   path: "/auth/register",
@@ -17,74 +19,56 @@ interface RegisterFormData {
 }
 
 export default function RegisterUI() {
-  const [formData, setFormData] = useState<RegisterFormData>({
-    email: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-    role: "student",
-  });
-  const [passwordMatch, setPasswordMatch] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [success, setSuccess] = useState(false);
+  const { register: registerUser, loading } = useAuth();
 
-  const { register, loading } = useAuth();
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (name === "password" || name === "confirmPassword") {
-      const pass = name === "password" ? value : formData.password;
-      const conf =
-        name === "confirmPassword" ? value : formData.confirmPassword;
-      setPasswordMatch(pass === conf);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset
+  } = useForm<RegisterFormData>({
+    defaultValues: {
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      role: "student",
     }
-  };
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!passwordMatch) return;
+  // Obserwuj hasło do walidacji confirmPassword
+  const password = watch("password");
 
+  const onSubmit = async (data: RegisterFormData) => {
     setError(null);
     setSuccess(false);
 
     try {
-      await register(
-        formData.email,
-        formData.password,
-        formData.username,
-        formData.role
-      );
+      await registerUser(data.email, data.password, data.username, data.role);
       setSuccess(true);
+      reset(); // Reset formularza
     } catch (err) {
       setError(err as Error);
     }
   };
 
-  const handleTestData = async (role: UserRole) => {
-    const mock: RegisterFormData = {
-      email: role === "student" ? "student@example.com" : "teacher@example.com",
-      username: role === "student" ? "teststudent" : "testteacher",
-      password: "password123",
-      confirmPassword: "password123",
-      role: role,
-    };
-    setFormData(mock);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      await register(mock.email, mock.password, mock.username, mock.role);
-      setSuccess(true);
-    } catch (err) {
-      setError(err as Error);
-    }
+  // Funkcja do wypełnienia danymi testowymi
+  const handleTestData = (role: UserRole) => {
+    setValue("email", role === "student" ? "student@example.com" : "teacher@example.com");
+    setValue("username", role === "student" ? "teststudent" : "testteacher");
+    setValue("password", "password123");
+    setValue("confirmPassword", "password123");
+    setValue("role", role);
   };
+
+  const roleOptions = [
+    { value: "student", label: "🎓 Student" },
+    { value: "teacher", label: "👨‍🏫 Nauczyciel" }
+  ];
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -95,93 +79,113 @@ export default function RegisterUI() {
             <p className="text-base-content/70 mt-2">Utwórz nowe konto</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Email</span>
+                <span className="label-text font-medium">Email *</span>
               </label>
               <input
+                {...register("email", {
+                  required: "Email jest wymagany",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Nieprawidłowy format email"
+                  }
+                })}
                 type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
                 placeholder="Wprowadź swój email"
-                className="input input-bordered w-full"
-                required
+                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
               />
+              {errors.email && (
+                <label className="label">
+                  <span className="label-text-alt text-error">{errors.email.message}</span>
+                </label>
+              )}
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">
-                  Nazwa użytkownika
-                </span>
+                <span className="label-text font-medium">Nazwa użytkownika *</span>
               </label>
               <input
+                {...register("username", {
+                  required: "Nazwa użytkownika jest wymagana",
+                  minLength: {
+                    value: 3,
+                    message: "Minimum 3 znaki"
+                  }
+                })}
                 type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
                 placeholder="Wprowadź nazwę użytkownika"
-                className="input input-bordered w-full"
-                required
+                className={`input input-bordered w-full ${errors.username ? 'input-error' : ''}`}
               />
+              {errors.username && (
+                <label className="label">
+                  <span className="label-text-alt text-error">{errors.username.message}</span>
+                </label>
+              )}
             </div>
 
-            {/* NOWE: Wybór roli */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Rola</span>
+                <span className="label-text font-medium">Rola *</span>
               </label>
               <select
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                className="select select-bordered w-full"
-                required
+                {...register("role", { required: "Rola jest wymagana" })}
+                className={`select select-bordered w-full ${errors.role ? 'select-error' : ''}`}
               >
-                <option value="student">🎓 Student</option>
-                <option value="teacher">👨‍🏫 Nauczyciel</option>
+                {roleOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Hasło</span>
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Wprowadź hasło"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Potwierdź hasło</span>
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Potwierdź hasło"
-                className={`input input-bordered w-full ${
-                  !passwordMatch && formData.confirmPassword
-                    ? "input-error"
-                    : ""
-                }`}
-                required
-              />
-              {!passwordMatch && formData.confirmPassword && (
+              {errors.role && (
                 <label className="label">
-                  <span className="label-text-alt text-error">
-                    Hasła nie pasują
-                  </span>
+                  <span className="label-text-alt text-error">{errors.role.message}</span>
+                </label>
+              )}
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Hasło *</span>
+              </label>
+              <input
+                {...register("password", {
+                  required: "Hasło jest wymagane",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum 6 znaków"
+                  }
+                })}
+                type="password"
+                placeholder="Wprowadź hasło"
+                className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
+              />
+              {errors.password && (
+                <label className="label">
+                  <span className="label-text-alt text-error">{errors.password.message}</span>
+                </label>
+              )}
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Potwierdź hasło *</span>
+              </label>
+              <input
+                {...register("confirmPassword", {
+                  required: "Potwierdzenie hasła jest wymagane",
+                  validate: value => value === password || "Hasła nie pasują"
+                })}
+                type="password"
+                placeholder="Potwierdź hasło"
+                className={`input input-bordered w-full ${errors.confirmPassword ? 'input-error' : ''}`}
+              />
+              {errors.confirmPassword && (
+                <label className="label">
+                  <span className="label-text-alt text-error">{errors.confirmPassword.message}</span>
                 </label>
               )}
             </div>
@@ -204,12 +208,30 @@ export default function RegisterUI() {
               <button
                 type="submit"
                 className={`btn btn-primary w-full ${loading ? "loading" : ""}`}
-                disabled={loading || !passwordMatch}
+                disabled={loading}
               >
                 {loading ? "Rejestrowanie..." : "Zarejestruj się"}
               </button>
             </div>
           </form>
+
+          <div className="divider text-xs">Test Data</div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleTestData("student")}
+              className="btn btn-outline btn-sm flex-1"
+            >
+              Test Student
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTestData("teacher")}
+              className="btn btn-outline btn-sm flex-1"
+            >
+              Test Teacher
+            </button>
+          </div>
 
           <div className="divider">LUB</div>
 

@@ -4,7 +4,7 @@ import { StatCard, OverviewCard } from '@/components/ui_bloglike/base';
 import { ProgressBar } from '@/components/ui_bloglike/base/ProgressBar';
 import { 
   Trophy, Target, Flame, BookOpen, TrendingUp, Clock, Star, 
-  BarChart3, Award, Zap, Brain, Medal, CheckCircle2
+  BarChart3, Zap, Medal, CheckCircle2
 } from 'lucide-react';
 
 // Allowed colors based on actual component props
