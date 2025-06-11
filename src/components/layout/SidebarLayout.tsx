@@ -15,11 +15,11 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
   menuComponent,
 }) => {
   return (
-    <div className="drawer lg:drawer-open min-h-[90vh]">
+    <div className="drawer lg:drawer-open min-h-[90vh] ">
       <input id="drawer-toggle" type="checkbox" className="drawer-toggle" />
 
       {/* Drawer Content */}
-      <div className="drawer-content flex flex-col">
+      <div className="drawer-content flex flex-col ">
         {/* Mobile menu button */}
         <div className="navbar lg:hidden bg-base-100">
           <div className="flex-none">
@@ -46,8 +46,8 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
 
         {/* Main Content */}
         <div className="flex-1 p-4 lg:p-8">
-          <div className="card bg-base-100 shadow-xl h-full">
-            <div className="card-body p-0 h-full">{children}</div>
+          <div className="card shadow-xl h-full">
+            <div className="card-body p-0 h-full bg-base-100">{children}</div>
           </div>
         </div>
       </div>
@@ -57,7 +57,11 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
         <label htmlFor="drawer-toggle" className="drawer-overlay"></label>
         <aside className="w-80 min-h-full bg-base-100">
           <div className="p-6">
-          <img className="w-42" src="/assets/smart-edi-play-logo.svg" alt="Logo"  />
+            <img
+              className="w-42"
+              src="/assets/smart-edi-play-logo.svg"
+              alt="Logo"
+            />
             {/* User Profile Section */}
             <div className="flex items-center gap-3 mb-8 mt-26  ">
               <div className="avatar avatar-placeholder">
@@ -74,8 +78,6 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
                 </p>
               </div>
             </div>
-
-           
 
             {/* Menu Component */}
             <div className="menu-container">{menuComponent}</div>

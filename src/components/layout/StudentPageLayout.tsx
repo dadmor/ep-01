@@ -66,7 +66,7 @@ export const StudentPageLayout: React.FC<StudentPageLayoutProps> = ({
         subtitle={subtitle}
         variant="courses"
       />
-      <div className={`${maxWidthClasses[maxWidth]} mx-auto ${showPadding ? 'px-6 py-16' : 'px-6'}`}>
+      <div className={`${maxWidthClasses[maxWidth]} ${showPadding ? 'px-6 py-16' : 'px-6'}`}>
         {renderContent()}
       </div>
     </SidebarLayout>

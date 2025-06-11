@@ -79,18 +79,18 @@ export function useFilters<T>({
   }, [data, filters, filterFunctions, configs]);
 
   const FilterComponent: React.FC = () => (
-    <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
-      <div className="space-y-4">
+    <div className="card bg-base-100 shadow-sm border border-base-300 p-6 mb-8">
+      <div className="flex flex-wrap gap-4 ">
         {configs.map(config => {
           if (config.type === 'text') {
             return (
               <div key={config.key} className="flex-1 min-w-64">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-base-content/60" />
                   <input
                     type="text"
                     placeholder={config.placeholder || `Szukaj ${config.label.toLowerCase()}...`}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="input input-bordered w-full pl-10 focus:input-primary"
                     value={filters[config.key]}
                     onChange={(e) => setFilter(config.key, e.target.value)}
                   />
@@ -103,7 +103,7 @@ export function useFilters<T>({
             return (
               <select
                 key={config.key}
-                className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="select select-bordered focus:select-primary"
                 value={filters[config.key]}
                 onChange={(e) => setFilter(config.key, e.target.value)}
               >
@@ -118,15 +118,15 @@ export function useFilters<T>({
 
           if (config.type === 'tabs') {
             return (
-              <div key={config.key} className="flex gap-2">
+              <div key={config.key} className="tabs tabs-boxed bg-base-200">
                 {config.options?.map(option => (
                   <button
                     key={option.value}
                     onClick={() => setFilter(config.key, option.value)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`tab ${
                       filters[config.key] === option.value
-                        ? "bg-blue-100 text-blue-700 border border-blue-200"
-                        : "text-gray-600 hover:bg-gray-50"
+                        ? "tab-active"
+                        : ""
                     }`}
                   >
                     {option.label} ({counts[option.value] || 0})
@@ -142,7 +142,7 @@ export function useFilters<T>({
         {Object.values(filters).some(value => value && value !== 'all') && (
           <button
             onClick={clearFilters}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            className="btn btn-outline btn-sm"
           >
             Wyczyść filtry
           </button>
