@@ -1,4 +1,4 @@
-// src/components/student/BadgeGrid.tsx
+// src/pages/student/grid.BadgeGrid.tsx
 import { ProgressBar } from '@/components/ui_bloglike/base/ProgressBar';
 import { Lock, CheckCircle2, Calendar, Clock } from 'lucide-react';
 import { badgeIcons } from './icons.badgeIcons';

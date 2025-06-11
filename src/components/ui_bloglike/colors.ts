@@ -7,10 +7,10 @@ export const colorPalette = {
   accent: { bg: "bg-purple-50/30", border: "border-purple-200/40", text: "" },
 
   // dla OverviewCard i StatCard
-  purple: { bg: "bg-purple-100", text: "text-purple-600" },
-  amber: { bg: "bg-amber-100", text: "text-amber-600" },
-  green: { bg: "bg-green-100", text: "text-green-600" },
-  blue: { bg: "bg-blue-100", text: "text-blue-600" },
-  rose: { bg: "bg-rose-50/50", text: "text-rose-600" },
-  yellow: { bg: "bg-yellow-50/50", text: "text-yellow-600" },
+  purple: { bg: "bg-purple-100", border: "border-purple-600", text: "text-purple-600" },
+  amber:  { bg: "bg-amber-100",  border: "border-amber-600",  text: "text-amber-600"  },
+  green:  { bg: "bg-green-100",  border: "border-green-600",  text: "text-green-600"  },
+  blue:   { bg: "bg-blue-100",   border: "border-blue-600",   text: "text-blue-600"   },
+  rose:   { bg: "bg-rose-50/50", border: "border-rose-600",   text: "text-rose-600"   },
+  yellow: { bg: "bg-yellow-50/50",border: "border-yellow-600", text: "text-yellow-600" },
 } as const;

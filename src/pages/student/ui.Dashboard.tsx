@@ -24,6 +24,8 @@ import {
   Medal
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { StudentMenu } from './menu.StudentMenu';
 
 export const routeConfig = { path: "/student/dashboard", title: "Student Dashboard" };
 
@@ -102,7 +104,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <SidebarLayout menuComponent={<StudentMenu userRole="student" />}>
       <PageHeader 
         title={`Witaj, ${user?.username}! 👋`}
         subtitle="Twój panel do nauki i śledzenia postępów"
@@ -441,6 +443,6 @@ export default function StudentDashboard() {
           <HelpSection />
         </div>
       </div>
-    </div>
+      </SidebarLayout>
   );
 }

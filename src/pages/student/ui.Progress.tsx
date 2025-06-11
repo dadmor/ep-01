@@ -20,6 +20,8 @@ import {
   Minus
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { StudentMenu } from './menu.StudentMenu';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
 
 export const routeConfig = { path: "/student/progress", title: "Moje Postępy" };
 
@@ -189,7 +191,7 @@ export default function StudentProgress() {
 
   if (!stats || stats.totalLessons === 0) {
     return (
-      <div className="min-h-screen bg-gray-50/30">
+      <SidebarLayout menuComponent={<StudentMenu userRole="student" />}>
         <PageHeader 
           title="Moje Postępy"
           subtitle="Śledź swoje wyniki i analizuj postępy w nauce"
@@ -204,12 +206,12 @@ export default function StudentProgress() {
             onAction={() => window.location.href = '/student/courses'}
           />
         </div>
-      </div>
+        </SidebarLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <SidebarLayout menuComponent={<StudentMenu userRole="student" />}>
       <PageHeader 
         title="Moje Postępy"
         subtitle="Śledź swoje wyniki i analizuj postępy w nauce"
@@ -501,6 +503,6 @@ export default function StudentProgress() {
           </div>
         </div>
       </div>
-    </div>
+      </SidebarLayout>
   );
 }

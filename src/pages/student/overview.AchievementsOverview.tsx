@@ -1,5 +1,5 @@
-// src/components/student/AchievementsOverview.tsx
 
+// src/pages/student/ovrerview.AchievementsOverview.tsx
 import { OverviewCard } from '@/components/ui_bloglike/base/OverviewCard';
 import { ProgressBar } from '@/components/ui_bloglike/base/ProgressBar';
 import { Trophy, Target, Star, TrendingUp } from 'lucide-react';

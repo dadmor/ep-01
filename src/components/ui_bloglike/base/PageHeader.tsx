@@ -1,41 +1,49 @@
-// src/components/ui_bloglike/base/PageHeader.tsx
+// src/components/PageHeader.tsx
+
+import { colorPalette } from "../colors";
+
+
 interface PageHeaderProps {
   title: string;
   subtitle: string;
-  variant?: 'default' | 'courses' | 'dashboard' | 'lesson' | 'progress' | 'achievements' | 'leaderboard';
+  variant?:
+    | 'default'
+    | 'courses'
+    | 'dashboard'
+    | 'lesson'
+    | 'progress'
+    | 'achievements'
+    | 'leaderboard';
+  className?: string;
 }
 
-export function PageHeader({ title, subtitle, variant = 'default' }: PageHeaderProps) {
-  const gradients = {
-    default: 'from-white to-gray-50/50',
-    courses: 'from-white to-blue-50/30',
-    dashboard: 'from-white to-green-50/30',
-    lesson: 'from-white to-purple-50/30',
-    progress: 'from-white to-emerald-50/30',
-    achievements: 'from-white to-amber-50/30',
-    leaderboard: 'from-white to-rose-50/30'
-  };
-
-  const titleColors = {
-    default: 'text-gray-900',
-    courses: 'text-blue-900',
-    dashboard: 'text-green-900',
-    lesson: 'text-purple-900',
-    progress: 'text-emerald-900',
-    achievements: 'text-amber-900',
-    leaderboard: 'text-rose-900'
+export function PageHeader({
+  title,
+  subtitle,
+  variant = 'default',
+  className = '',
+}: PageHeaderProps) {
+  const variantBorders: Record<NonNullable<PageHeaderProps['variant']>, string> = {
+    default: colorPalette.default.border,
+    courses: colorPalette.blue.border,
+    dashboard: colorPalette.green.border,
+    lesson: colorPalette.purple.border,
+    progress: colorPalette.green.border,
+    achievements: colorPalette.amber.border,
+    leaderboard: colorPalette.rose.border,
   };
 
   return (
-    <div className={`bg-gradient-to-b ${gradients[variant]} border-b border-gray-200/40`}>
-      <div className="max-w-3xl mx-auto px-6 py-8 lg:py-12 text-center">
-        <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-medium ${titleColors[variant]} mb-3 tracking-tight leading-tight`}>
-          {title}
-        </h1>
-        
-        <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-lg mx-auto font-normal">
-          {subtitle}
-        </p>
+    <div className={`border-b border-slate-300 bg-background ${className}`}>
+      <div className="container space-y-1 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-16">
+        <div className={`border-l-6 pl-6 space-y-2 ${variantBorders[variant]}`}>
+          <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-4xl">
+            {title}
+          </h1>
+          <p className="text-lg text-muted-foreground sm:text-xl">
+            {subtitle}
+          </p>
+        </div>
       </div>
     </div>
   );

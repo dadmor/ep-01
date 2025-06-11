@@ -1,4 +1,3 @@
-// src/pages/student/ui.Courses.tsx
 import { CourseCard } from '@/components/CourseCard';
 import { HelpSection } from '@/components/HelpSection';
 import { EmptyState, PageHeader, StatCard } from '@/components/ui_bloglike/base';
@@ -24,6 +23,8 @@ import {
   Languages
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { StudentMenu } from './menu.StudentMenu';
 
 export const routeConfig = { path: "/student/courses", title: "Courses" };
 
@@ -161,7 +162,7 @@ export default function StudentCourses() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <SidebarLayout menuComponent={<StudentMenu userRole="student" />}>
       <PageHeader 
         title="Twoje Kursy"
         subtitle="Rozwijaj swoje umiejętności dzięki starannie przygotowanym kursom"
@@ -182,7 +183,7 @@ export default function StudentCourses() {
         ) : (
           <>
             {/* Stats */}
-            <div className="max-w-4xl mx-auto mb-12">
+            <div className="mb-12">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                   title="Dostępne kursy"
@@ -215,7 +216,7 @@ export default function StudentCourses() {
             </div>
 
             {/* Filters & Search */}
-            <div className="max-w-5xl mx-auto mb-8">
+            <div className="mb-8">
               <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6">
                 <div className="flex flex-wrap gap-4 items-center justify-between">
                   {/* Search */}
@@ -262,7 +263,7 @@ export default function StudentCourses() {
 
             {/* Progress Overview */}
             {user && stats.completed > 0 && (
-              <div className="max-w-5xl mx-auto mb-12">
+              <div className="mb-12">
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/60 p-6">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -293,7 +294,7 @@ export default function StudentCourses() {
             )}
 
             {/* Courses by Subject */}
-            <div className="max-w-5xl mx-auto space-y-12">
+          <div className="space-y-12">
               {Object.entries(lessonsBySubject).map(([subject, subjectLessons]) => {
                 const Icon = subjectIcons[subject] || subjectIcons.default;
                 const color = subjectColors[subject] || 'gray';
@@ -321,17 +322,17 @@ export default function StudentCourses() {
                     </div>
 
                     {/* Subject Progress Bar */}
-                    <div className="bg-gray-200 rounded-full h-1.5 ml-16">
+                    <div className="bg-gray-200 rounded-full h-1.5">
                       <div 
-                        className={`bg-${color}-500 h-1.5 rounded-full transition-all duration-500`}
+                        className={`bg-${color}-500 h-1.5 rounded-full transition-all duration-500`} 
                         style={{ 
                           width: `${(subjectLessons.filter(l => l.isCompleted).length / subjectLessons.length) * 100}%` 
                         }}
                       ></div>
                     </div>
 
-                    {/* Courses Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ml-16">
+                    {/* Courses Grid (wyjustowane) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
                       {subjectLessons.map((lesson) => (
                         <CourseCard
                           key={lesson.id}
@@ -354,7 +355,7 @@ export default function StudentCourses() {
 
             {/* No results */}
             {filteredLessons.length === 0 && (
-              <div className="max-w-lg mx-auto mt-12">
+              <div className="mt-12">
                 <EmptyState
                   icon={<Filter className="w-8 h-8 text-gray-400" />}
                   title="Brak wyników"
@@ -375,6 +376,6 @@ export default function StudentCourses() {
           </>
         )}
       </div>
-    </div>
+      </SidebarLayout>
   );
 }

@@ -1,4 +1,4 @@
-// src/components/student/CurrentStats.tsx
+// src/pages/student/stats.CurrentStats.tsx
 import { StatCard } from '@/components/ui_bloglike/base';
 import { Target, Zap, Flame } from 'lucide-react';
 
