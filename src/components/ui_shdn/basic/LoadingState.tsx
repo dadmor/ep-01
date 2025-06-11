@@ -13,13 +13,13 @@ interface LoadingStateProps {
 
 export const LoadingState: React.FC<LoadingStateProps> = ({
   loading = true,
-  size = 'md',
+
   children = null
 }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[20rem]">
-        <LoadingSpinner size={size} />
+        <LoadingSpinner  />
       </div>
     );
   }

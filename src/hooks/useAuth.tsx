@@ -1,4 +1,4 @@
-// src/hooks/useAuth.tsx - ROZSZERZONA WERSJA Z ROLAMI
+// src/hooks/useAuth.tsx - ROZSZERZONA WERSJA Z ROLAMI I DELEGACJĄ
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/utility";
 
@@ -19,15 +19,18 @@ export type User = {
 type AuthContextType = {
   user: User | null;
   loading: boolean;
+  delegatedUser: User | null; // Dodane pole dla delegowanego użytkownika
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, username?: string, role?: UserRole) => Promise<void>;
   logout: () => Promise<void>;
+  setDelegatedUser: (user: User | null) => void; // Funkcja do ustawiania delegacji
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [delegatedUser, setDelegatedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const login = async (email: string, password: string) => {
@@ -87,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     setUser(null);
+    setDelegatedUser(null); // Wyczyść też delegowanego użytkownika
   };
 
   useEffect(() => {
@@ -113,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         } else {
           setUser(null);
+          setDelegatedUser(null); // Wyczyść delegację przy wylogowaniu
         }
       }
     );
@@ -120,10 +125,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  console.log("🔍 USEAUTH RENDER:", { hasUser: !!user, loading });
+  console.log("🔍 USEAUTH RENDER:", { hasUser: !!user, loading, hasDelegated: !!delegatedUser });
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      delegatedUser, 
+      login, 
+      register, 
+      logout, 
+      setDelegatedUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );
