@@ -67,7 +67,7 @@ export default function StudentLesson() {
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => window.history.back()}
-              className="w-10 h-10 bg-white rounded-xl border border-gray-200/60 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+              className="w-10 h-10 bg-base-100 rounded-xl border border-gray-200/60 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
@@ -89,7 +89,7 @@ export default function StudentLesson() {
 
       {/* Content */}
       <div className="max-w-3xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm">
+        <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
           <div className="p-8 max-h-[70vh] overflow-y-auto">
             <div className="space-y-8">
               {/* Articles */}
@@ -157,7 +157,7 @@ export default function StudentLesson() {
                               }
                             `}>
                               {selectedAnswers[task.id] === option && (
-                                <div className="w-full h-full rounded-full bg-white scale-[0.4]"></div>
+                                <div className="w-full h-full rounded-full bg-base-100 scale-[0.4]"></div>
                               )}
                             </div>
                           </div>

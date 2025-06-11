@@ -30,7 +30,7 @@ export const Button: React.FC<ButtonProps> = ({
   const variants = {
     primary: "bg-slate-900 text-white hover:bg-slate-800 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500",
     secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500",
-    outline: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500",
+    outline: "border border-slate-300 bg-base-100 text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500",
     ghost: "text-slate-700 hover:bg-slate-100 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500",
   };
 

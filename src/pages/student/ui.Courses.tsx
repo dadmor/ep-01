@@ -169,7 +169,7 @@ export default function StudentCourses() {
         variant="courses"
       />
 
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl px-8 py-16">
         {!processedLessons?.length ? (
           <div className="max-w-lg mx-auto">
             <EmptyState
@@ -217,7 +217,7 @@ export default function StudentCourses() {
 
             {/* Filters & Search */}
             <div className="mb-8">
-              <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6">
+              <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6">
                 <div className="flex flex-wrap gap-4 items-center justify-between">
                   {/* Search */}
                   <div className="flex-1 min-w-64">

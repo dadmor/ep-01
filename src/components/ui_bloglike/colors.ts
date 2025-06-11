@@ -1,6 +1,6 @@
 // src/components/ui_bloglike/colors.ts
 export const colorPalette = {
-  default: { bg: "bg-white", border: "border-gray-200/60", text: "" },
+  default: { bg: "bg-base-100", border: "border-gray-200/60", text: "" },
   success: { bg: "bg-green-50/30", border: "border-green-200/40", text: "" },
   warning: { bg: "bg-amber-50/30", border: "border-amber-200/40", text: "" },
   info: { bg: "bg-blue-50/30", border: "border-blue-200/40", text: "" },

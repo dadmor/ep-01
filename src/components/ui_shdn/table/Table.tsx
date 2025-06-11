@@ -106,7 +106,7 @@ const Table: React.FC<TableProps> = ({
             <th className="w-16 px-6 py-3"></th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-slate-200">
+        <tbody className="bg-base-100 divide-y divide-slate-200">
           {data.map((row) => (
             <tr key={row.id} className="hover:bg-slate-50">
               {onSelect && (

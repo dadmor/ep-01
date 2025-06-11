@@ -66,7 +66,7 @@ export function CourseCard({
 
   return (
     <Link to={`/student/lesson/${id}`} className="block group">
-      <div className="relative bg-white rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md hover:border-gray-300/60 transition-all duration-200 overflow-hidden h-full">
+      <div className="relative bg-base-100 rounded-xl border border-gray-200/60 shadow-sm hover:shadow-md hover:border-gray-300/60 transition-all duration-200 overflow-hidden h-full">
         {/* Header with status indicator */}
         <div className="relative">
           <div className="p-6 pb-4">

@@ -13,7 +13,7 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
   value,
   ...props
 }) => {
-  const baseClasses = "w-full px-3 py-2 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-vertical";
+  const baseClasses = "w-full px-3 py-2 border border-slate-300 rounded-md bg-base-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent resize-vertical";
   
   const currentLength = typeof value === 'string' ? value.length : 0;
 

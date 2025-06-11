@@ -111,7 +111,7 @@ export default function StudentDashboard() {
         variant="dashboard"
       />
 
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="max-w-6xl px-8 py-16">
         {/* Main Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-12">
           <StatCard
@@ -158,7 +158,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
+        <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Szybkie akcje</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link 
@@ -222,7 +222,7 @@ export default function StudentDashboard() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Recommended Lessons */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="lg:col-span-2 bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center border border-blue-200/40">
@@ -278,7 +278,7 @@ export default function StudentDashboard() {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-green-50/50 rounded-xl flex items-center justify-center border border-green-200/40">
@@ -344,7 +344,7 @@ export default function StudentDashboard() {
         {/* Performance Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Subject Performance */}
-          <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-purple-50/50 rounded-xl flex items-center justify-center border border-purple-200/40">
@@ -392,7 +392,7 @@ export default function StudentDashboard() {
           </div>
 
           {/* Recent Badges */}
-          <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-amber-50/50 rounded-xl flex items-center justify-center border border-amber-200/40">

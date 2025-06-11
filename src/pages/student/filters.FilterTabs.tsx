@@ -9,7 +9,7 @@ interface FilterTabsProps {
 
 export function FilterTabs({ filter, counts, setFilter }: FilterTabsProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
+    <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
       <div className="flex gap-2">
         <button
           onClick={() => setFilter("all")}

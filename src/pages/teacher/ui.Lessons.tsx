@@ -2,6 +2,8 @@
 import { useFetch, useInsert } from '@/pages/api/hooks';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
+import { TeacherMenu } from './menu.TeacherMenu';
 
 export const routeConfig = { path: "/teacher/lessons", title: "Manage Lessons" };
 
@@ -18,8 +20,8 @@ export default function TeacherLessons() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <SidebarLayout menuComponent={<TeacherMenu userRole="teacher" />}>
+      <div className="max-w-6xl mx-auto space-y-6 p-6">
         
         {/* Header Card */}
         <div className="card bg-base-100 shadow-sm">
@@ -81,6 +83,6 @@ export default function TeacherLessons() {
           </div>
         )}
       </div>
-    </div>
+      </SidebarLayout>
   );
 }

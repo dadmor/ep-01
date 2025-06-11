@@ -23,7 +23,7 @@ export function BadgeGrid({ badges }: { badges: BadgeItem[] }) {
         return (
           <div
             key={badge.id}
-            className={`bg-white rounded-xl border shadow-sm p-6 transition-all duration-200 ${
+            className={`bg-base-100 rounded-xl border shadow-sm p-6 transition-all duration-200 ${
               badge.isEarned
                 ? 'border-green-200/60 hover:shadow-md'
                 : badge.isAvailable

@@ -256,7 +256,7 @@ export default function StudentProgress() {
 
         {/* Performance Trend */}
         {trend && (
-          <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
+          <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
             <div className="flex items-center gap-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                 trend.direction === 'up' ? 'bg-green-50 border border-green-200' :
@@ -291,7 +291,7 @@ export default function StudentProgress() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
+        <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6 mb-8">
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Okres:</span>
@@ -329,7 +329,7 @@ export default function StudentProgress() {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Subject Analysis */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="lg:col-span-2 bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-purple-50/50 rounded-xl flex items-center justify-center border border-purple-200/40">
@@ -395,7 +395,7 @@ export default function StudentProgress() {
           </div>
 
           {/* Recent Results */}
-          <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm">
+          <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center border border-blue-200/40">
@@ -477,7 +477,7 @@ export default function StudentProgress() {
         </div>
 
         {/* Detailed Stats */}
-        <div className="mt-8 bg-white rounded-xl border border-gray-200/60 shadow-sm p-6">
+        <div className="mt-8 bg-base-100 rounded-xl border border-gray-200/60 shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Szczegółowe statystyki</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

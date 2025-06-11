@@ -50,7 +50,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
           multiple
           value={Array.isArray(value) ? value : []}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent min-h-[2.5rem] max-h-32"
+          className="w-full px-3 py-2 border border-slate-300 rounded-md bg-base-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent min-h-[2.5rem] max-h-32"
           size={Math.min(options.length, 6)}
         >
           {options.map(opt => (
@@ -77,7 +77,7 @@ const SelectFilter: React.FC<SelectFilterProps> = ({
         name={name}
         value={typeof value === 'string' ? value : ''}
         onChange={handleChange}
-        className="w-full px-3 py-2 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent appearance-none pr-10"
+        className="w-full px-3 py-2 border border-slate-300 rounded-md bg-base-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent appearance-none pr-10"
       >
         <option value="">{placeholder}</option>
         {options.map(opt => (
