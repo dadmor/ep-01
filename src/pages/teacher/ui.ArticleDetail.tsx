@@ -12,13 +12,39 @@ export const routeConfig = {
 export default function ArticleDetail() {
   const { lessonId, articleId } = useParams();
 
+  // ✅ NAPRAWA: Zabezpieczenie przed undefined i 'create'
+  if (!articleId || articleId === 'create' || articleId === 'undefined') {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body text-center">
+            <h2 className="text-xl font-medium mb-2">Nieprawidłowy ID artykułu</h2>
+            <p className="text-base-content/70 mb-4">
+              ID artykułu jest nieprawidłowe: {articleId}
+            </p>
+            <Link 
+              to={`/teacher/lessons/${lessonId}`}
+              className="btn btn-primary"
+            >
+              ← Powrót do lekcji
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ NAPRAWA: Dodano enabled do zapytań
   const { data: articles } = useFetch(
     "article-detail",
-    `articles?id=eq.${articleId}`
+    `articles?id=eq.${articleId}`,
+
   );
+  
   const { data: lesson } = useFetch(
     "lesson-detail-for-article",
-    `lessons?id=eq.${lessonId}`
+    `lessons?id=eq.${lessonId}`,
+
   );
 
   const articleData = articles?.[0];

@@ -15,17 +15,35 @@ import {
  * @param {string} table - nazwa tabeli w Supabase
  * @returns {UseQueryResult<T[], Error>}
  */
+// hooks.ts - dodaj support dla query
 export function useFetch<T = any>(
   key: string, 
-  table: string
+  table: string,
+  query?: string  // Dodaj opcjonalny parametr query
 ): UseQueryResult<T[], Error> {
   return useQuery({
-    queryKey: [key],
+    queryKey: [key, query], // Uwzględnij query w key
     queryFn: async (): Promise<T[]> => {
-      const { data, error } = await supabase.from(table).select('*');
+      let queryBuilder = supabase.from(table).select('*');
+      
+      // Jeśli przekazano query, dodaj filtry
+      if (query) {
+        // Parsuj query i dodaj filtry
+        const url = new URLSearchParams(query);
+        url.forEach((value, key) => {
+          if (key.includes('eq.')) {
+            const [field] = key.split('.');
+            queryBuilder = queryBuilder.eq(field, value);
+          }
+          // Dodaj więcej operatorów według potrzeb
+        });
+      }
+      
+      const { data, error } = await queryBuilder;
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !query || !query.includes('undefined') // Nie wykonuj jeśli ID jest undefined
   });
 }
 
