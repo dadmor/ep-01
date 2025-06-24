@@ -1,4 +1,4 @@
-// pages/Lesson.tsx - Zoptymalizowana wersja (60 linii vs 120)
+// pages/Lesson.tsx - obsługa single-choice, multi-choice i text
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle, BookOpen } from "lucide-react";
@@ -11,8 +11,11 @@ interface Article {
   content: string;
 }
 
+type TaskType = 'single-choice' | 'multi-choice' | 'text';
+
 interface Task {
   id: string;
+  type: TaskType;
   question_text: string;
   options?: string[];
 }
@@ -27,8 +30,9 @@ export const routeConfig = { path: "/student/lesson/:id", title: "Lesson" };
 
 export default function StudentLesson() {
   const { id } = useParams<{ id: string }>();
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string | string[]>>({});
   const [showResults, setShowResults] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data: lesson, isLoading: lessonLoading } = useFetch<Lesson>(
     `lesson-${id}`,
@@ -45,11 +49,90 @@ export default function StudentLesson() {
 
   const isLoading = lessonLoading || articlesLoading || tasksLoading;
   const currentLesson = lesson?.[0];
-  const hasTasks = (tasks?.length ?? 0) > 0;
-  const allAnswered = Object.keys(selectedAnswers).length === (tasks?.length ?? 0);
+  const currentTask = tasks?.[currentIndex];
+  const allAnswered = tasks && tasks.every(task => selectedAnswers[task.id] !== undefined);
 
-  const handleAnswerChange = (taskId: string, answer: string) => {
-    setSelectedAnswers((prev) => ({ ...prev, [taskId]: answer }));
+  const handleAnswerChange = (taskId: string, value: string | string[]) => {
+    setSelectedAnswers(prev => ({ ...prev, [taskId]: value }));
+  };
+
+  const toggleMultiAnswer = (taskId: string, option: string) => {
+    const current = selectedAnswers[taskId] as string[] || [];
+    if (current.includes(option)) {
+      handleAnswerChange(taskId, current.filter(o => o !== option));
+    } else {
+      handleAnswerChange(taskId, [...current, option]);
+    }
+  };
+
+  const renderTask = () => {
+    if (!currentTask) return null;
+    const value = selectedAnswers[currentTask.id];
+
+    switch (currentTask.type) {
+      case 'text':
+        return (
+          <input
+            type="text"
+            className="input input-bordered w-full"
+            placeholder="Wpisz odpowiedź..."
+            value={typeof value === 'string' ? value : ''}
+            onChange={(e) => handleAnswerChange(currentTask.id, e.target.value)}
+            disabled={showResults}
+          />
+        );
+
+      case 'multi-choice':
+        return currentTask.options?.map((option, idx) => {
+          const inputId = `task-${currentTask.id}-option-${idx}`;
+          const checked = Array.isArray(value) && value.includes(option);
+          return (
+            <div key={idx}>
+              <input
+                id={inputId}
+                type="checkbox"
+                className="sr-only"
+                checked={checked}
+                onChange={() => toggleMultiAnswer(currentTask.id, option)}
+                disabled={showResults}
+              />
+              <label htmlFor={inputId} className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 border ${checked ? 'bg-blue-50/50 border-blue-200/60 shadow-sm' : 'bg-gray-50/30 border-gray-200/40 hover:bg-gray-50/60 hover:border-gray-300/60'}`}>
+                <div className={`w-5 h-5 rounded border-2 ${checked ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}>
+                  {checked && <div className="w-full h-full bg-base-100 scale-[0.4] rounded" />}
+                </div>
+                <span className="flex-1 text-gray-700">{option}</span>
+              </label>
+            </div>
+          );
+        });
+
+      case 'single-choice':
+      default:
+        return currentTask.options?.map((option, idx) => {
+          const inputId = `task-${currentTask.id}-option-${idx}`;
+          const checked = value === option;
+          return (
+            <div key={idx}>
+              <input
+                id={inputId}
+                type="radio"
+                name={`task-${currentTask.id}`}
+                value={option}
+                className="sr-only"
+                onChange={() => handleAnswerChange(currentTask.id, option)}
+                checked={checked}
+                disabled={showResults}
+              />
+              <label htmlFor={inputId} className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 border ${checked ? 'bg-blue-50/50 border-blue-200/60 shadow-sm' : 'bg-gray-50/30 border-gray-200/40 hover:bg-gray-50/60 hover:border-gray-300/60'}`}>
+                <div className={`w-5 h-5 rounded-full border-2 ${checked ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}>
+                  {checked && <div className="w-full h-full rounded-full bg-base-100 scale-[0.4]" />}
+                </div>
+                <span className="flex-1 text-gray-700">{option}</span>
+              </label>
+            </div>
+          );
+        });
+    }
   };
 
   const LessonHeader = () => (
@@ -84,120 +167,51 @@ export default function StudentLesson() {
       <div className="bg-base-100 rounded-xl border border-gray-200/60 shadow-sm">
         <div className="p-8 max-h-[70vh] overflow-y-auto">
           <div className="space-y-8">
-            {/* Articles */}
             {articles?.map((article) => (
               <div key={article.id} className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {article.title}
-                </h2>
-                <div
-                  className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
-                />
+                <h2 className="text-xl font-semibold text-gray-900">{article.title}</h2>
+                <div className="prose max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
               </div>
             ))}
 
-            {/* Divider */}
-            {articles && articles.length > 0 && hasTasks && (
-              <div className="flex items-center gap-4 py-6">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-sm font-medium text-gray-500 px-4">ZADANIA</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
-              </div>
-            )}
-
-            {/* Tasks */}
-            {tasks?.map((task, idx) => (
-              <div key={task.id} className="space-y-4">
+            {currentTask && !showResults && (
+              <div key={currentTask.id} className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900">
                   {tasks.length > 1 && (
                     <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full mr-3">
-                      {idx + 1}
+                      {currentIndex + 1}
                     </span>
                   )}
-                  {task.question_text}
+                  {currentTask.question_text}
                 </h3>
 
-                {task.options && (
-                  <div className="space-y-3">
-                    {task.options.map((option, optIdx) => (
-                      <label
-                        key={optIdx}
-                        className={`
-                          flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 border
-                          ${selectedAnswers[task.id] === option
-                            ? 'bg-blue-50/50 border-blue-200/60 shadow-sm'
-                            : 'bg-gray-50/30 border-gray-200/40 hover:bg-gray-50/60 hover:border-gray-300/60'
-                          }
-                          ${showResults ? 'cursor-default' : ''}
-                        `}
-                      >
-                        <div className="relative">
-                          <input
-                            type="radio"
-                            name={`task-${task.id}`}
-                            value={option}
-                            className="sr-only"
-                            onChange={() => handleAnswerChange(task.id, option)}
-                            disabled={showResults}
-                          />
-                          <div className={`
-                            w-5 h-5 rounded-full border-2 transition-colors
-                            ${selectedAnswers[task.id] === option
-                              ? 'border-blue-500 bg-blue-500'
-                              : 'border-gray-300'
-                            }
-                          `}>
-                            {selectedAnswers[task.id] === option && (
-                              <div className="w-full h-full rounded-full bg-base-100 scale-[0.4]"></div>
-                            )}
-                          </div>
-                        </div>
-                        <span className="flex-1 text-gray-700">{option}</span>
-                        {showResults && selectedAnswers[task.id] === option && (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        )}
-                      </label>
-                    ))}
-                  </div>
-                )}
+                {renderTask()}
+
+                <div className="pt-6">
+                  {selectedAnswers[currentTask.id] && (
+                    currentIndex < tasks.length - 1 ? (
+                      <button onClick={() => setCurrentIndex(i => i + 1)} className="btn btn-primary">Dalej</button>
+                    ) : (
+                      <button onClick={() => setShowResults(true)} className="btn btn-success">Sprawdź odpowiedzi</button>
+                    )
+                  )}
+                </div>
               </div>
-            ))}
+            )}
+
+            {showResults && (
+              <div className="text-center space-y-3">
+                <div className="flex items-center justify-center gap-2 text-green-600">
+                  <CheckCircle className="w-6 h-6" />
+                  <span className="font-semibold text-lg">Świetnie!</span>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Odpowiedziałeś na {Object.keys(selectedAnswers).length} z {tasks?.length} pytań
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Footer */}
-        {hasTasks && (
-          <div className="p-6 border-t border-gray-200/40 bg-gray-50/30">
-            <div className="text-center">
-              {!showResults ? (
-                <button
-                  className={`
-                    px-8 py-3 rounded-xl font-medium transition-all duration-200 shadow-sm
-                    ${!allAnswered
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:shadow-md'
-                    }
-                  `}
-                  onClick={() => setShowResults(true)}
-                  disabled={!allAnswered}
-                >
-                  Sprawdź odpowiedzi
-                </button>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-center gap-2 text-green-600">
-                    <CheckCircle className="w-6 h-6" />
-                    <span className="font-semibold text-lg">Świetnie!</span>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Odpowiedziałeś na {Object.keys(selectedAnswers).length} z {tasks?.length} pytań
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -206,12 +220,7 @@ export default function StudentLesson() {
     <div className="min-h-screen bg-gray-50/30">
       <LessonHeader />
       {isLoading ? (
-        <StudentPageLayout
-          title=""
-          subtitle=""
-          isLoading={true}
-          showPadding={false}
-        >
+        <StudentPageLayout title="" subtitle="" isLoading={true} showPadding={false}>
           <></>
         </StudentPageLayout>
       ) : (
@@ -219,4 +228,4 @@ export default function StudentLesson() {
       )}
     </div>
   );
-} 
+}

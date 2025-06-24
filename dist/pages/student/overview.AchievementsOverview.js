@@ -1,8 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-// src/pages/student/ovrerview.AchievementsOverview.tsx
-import { OverviewCard } from '@/components/ui_bloglike/base/OverviewCard';
-import { ProgressBar } from '@/components/ui_bloglike/base/ProgressBar';
-import { Trophy, Target, Star, TrendingUp } from 'lucide-react';
-export function AchievementsOverview({ stats }) {
-    return (_jsxs("div", { className: "bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200/60 p-8 mb-12", children: [_jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6", children: [_jsx(OverviewCard, { icon: _jsx(Trophy, { className: "w-8 h-8 text-purple-600" }), value: stats.earned, label: "Zdobyte odznaki", subLabel: `z ${stats.total} dostępnych`, color: "purple" }), _jsx(OverviewCard, { icon: _jsx(Target, { className: "w-8 h-8 text-amber-600" }), value: `${stats.percentage}%`, label: "Uko\u0144czone", color: "amber" }), _jsx(OverviewCard, { icon: _jsx(Star, { className: "w-8 h-8 text-green-600" }), value: stats.perfectScores, label: "Perfekcyjne wyniki", subLabel: "100% poprawnych", color: "green" }), _jsx(OverviewCard, { icon: _jsx(TrendingUp, { className: "w-8 h-8 text-blue-600" }), value: `${stats.averageScore}%`, label: "\u015Arednia ocena", subLabel: "ze wszystkich lekcji", color: "blue" })] }), _jsxs("div", { className: "mt-8", children: [_jsxs("div", { className: "flex justify-between items-center mb-2", children: [_jsx("span", { className: "text-sm font-medium text-gray-700", children: "Post\u0119p osi\u0105gni\u0119\u0107" }), _jsxs("span", { className: "text-sm text-gray-600", children: [stats.earned, " / ", stats.total] })] }), _jsx(ProgressBar, { percentage: stats.percentage })] })] }));
-}

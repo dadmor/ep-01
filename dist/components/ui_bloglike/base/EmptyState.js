@@ -1,4 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-export function EmptyState({ icon, title, description, actionLabel, onAction }) {
-    return (_jsxs("div", { className: "flex flex-col items-center justify-center py-16 px-8", children: [_jsx("div", { className: "w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-50 to-gray-100/80 rounded-3xl flex items-center justify-center shadow-sm border border-gray-200/40", children: icon }), _jsx("h2", { className: "text-xl font-semibold text-gray-900 mb-3 text-center max-w-sm", children: title }), _jsx("p", { className: "text-gray-600 mb-8 leading-relaxed text-center max-w-md text-sm", children: description }), actionLabel && onAction && (_jsx("button", { className: "px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm", onClick: onAction, children: actionLabel }))] }));
-}
